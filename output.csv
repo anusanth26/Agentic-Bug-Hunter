@@ -1,0 +1,617 @@
+Code ID,Detected Bug Line,Generated Explanation
+16,6.0,"The bug occurs at the line `.writeData(""rt"", 8, 0)`. This code relates to mode for editing vectors at runtime. According to the known bug manual retrieved via MCP, This function can only work with runtime data. It cannot be put into
+RDI_BEGIN/RDI_END() because it can only edit vector data and cannot execute vectors.
+It does not support insertSub().
+Supported runtime commands
+Function Data type More information
+writeVec(string rtv, int vecPos) vector <ARRAY_I>: Different
+vectors per site.
+rdi.smartVec().writeVec()
+ARRAY_I: The same vector on all
+sites.
+writeBit(string rtv, int bitPos)
+expectBit(string rtv, int bitPos)
+vector <ARRAY_I>: Different
+bitStream per site.
+rdi.smartVec().writeBit()
+rdi.smartVec().expectBit()
+ARRAY_I: The same bitStream on all
+sites.
+writeData(string rtv, int bitNum,
+int bitPos)
+expectData(string rtv, int bitNum,
+int bitPos)
+ARRAY_I or ARRAY_LL: Different
+data per site.
+rdi.smartVec().writeData()
+rdi.smartVec().expectData()
+Int or long long: The same data
+on all sites.
+writeParData(string rtv, int bitPos) ARRAY_I or ARRAY_LL: The different
+data per site.
+rdi.smartVec().writeParData()
+Int or long long: The same data
+on all sites.
+Syntax
+A statement example that download() works together with write...() and
+expect...() commands:
+rdi.smartVec().download();
+rdi.smartVec().pin(pName).write...(""rtData"",...).download();
+rdi.smartVec().pin(pName).expect...(""rtData"",...).download();"
+32,2.0,"The bug occurs at the line `rdi.port(""pt1"").dc().pin(""dig2"").vForce(1 uA).burst();`. This code relates to rdi.port(TA::MULTI_PORT).func()
+This function allows multi-port labels to be combined to form a new burst. It is used for
+dynamic mode in the func() class only.Multi-port burst with .port(TA::MULTI_PORT). According to the known bug manual retrieved via MCP, Related information
+rdi.id().getMultiPassFail()
+rdi.port(TA::MULTI_PORT).func()
+Functional changes
+Introduced in SmartRDI 2.1.0
+SmartRDI 7.6.1: Multi-port burst labels are supported in dynamic mode.
+rdi.func().burstRunTime()
+Creates an empty burst label and specifies the maximum number of labels to be
+patched.
+SmartRDI uses this function to generate an empty burst label and then applies the
+firmware command SQPG to patch the burst content.
+You can use only one burstRunTime() command for one port.
+Use rdi.id().getMultiPassFail() to retrieve the results from all the patterns in the created
+burst label.
+Syntax
+List of parameters
+Parameter Description
+sRunTime The runtime value.
+iMaxNum The maximum number of burst labels to be patched.
+11  RDI_BEGINRDI_BEGIN();();
+22  ......
+33  rdirdi..portport((""pt1""""pt1"").).funcfunc((""id1""""id1"").).burstburst((""MPBurst1""""MPBurst1"").).executeexecute();();
+44  ......
+55  rdirdi..portport((""pt2""""pt2"").).funcfunc((""id2""""id2"").).burstburst((""MPBurst2""""MPBurst2"").).executeexecute();();
+66  ......
+77  RDI_ENDRDI_END();();
+88    
+99  intint pf  pf == rdi rdi..idid((""id1""""id1"").).getPassFailgetPassFail();();  // returns 0// returns 0
+1010  ARRAY_I ary2 ARRAY_I ary2 == rdi rdi..idid((""id1""""id1"").).getMultiPassFailgetMultiPassFail();();    // returns { 0,1// returns { 0,1
+1111    
+1212  intint pf  pf == rdi rdi..idid((""id1""""id1"").).getPassFailgetPassFail();();  // returns 1// returns 1
+1313  ARRAY_I ary3 ARRAY_I ary3 == rdi rdi..idid((""id2""""id2"")."
+25,1.0,"The bug occurs at the line `ARRAY_I write_data(2); // Define a variable for a dual-site test`. This code relates to rdi.protocol().write()
+Writes a piece of data on a specified address at runtime. According to the known bug manual retrieved via MCP, Functional changes
+Introduced in SmartRDI 2.1.0
+rdi.protocol().write()
+Writes a single piece of data on a specified address.
+Syntax
+List of parameters
+Parameter Description
+iAddr The address to write.
+iData The data to write.
+sData The string containing the data to write at runtime. Refer to Changing the parameter value at runtime
+with SmartRDI.
+aiBurstData The array containing the burst of data to be written.
+Examples
+Write specific data
+Write at runtime
+Topic 141705
+11  rdirdi..protocolprotocol().().writewrite((longlong  longlong iAddr iAddr,,  longlong  longlong iData iData););
+22  rdirdi..protocolprotocol().().writewrite((longlong  longlong iAddr iAddr,,  longlong iData iData););
+33  rdirdi..protocolprotocol().().writewrite((longlong  longlong iAddr iAddr,,  intint iData iData););
+44  rdirdi..protocolprotocol().().writewrite((longlong iAddr iAddr,,  longlong iData iData););
+55  rdirdi..protocolprotocol().().writewrite((longlong iAddr iAddr,,  intint iData iData););
+66  rdirdi..protocolprotocol().().writewrite((intint iAddr iAddr,,  longlong iData iData););
+77  rdirdi..protocolprotocol().().writewrite((intint iAddr iAddr,,  intint iData iData););
+88  rdirdi..protocolprotocol().().writewrite((longlong  longlong iAddr iAddr,,  constconst  stringstring  &&sDatasData););
+99  rdirdi..protocolprotocol().().writewrite((longlong  longlong iAddr iAddr,,  constconst ARRAY_I  ARRAY_I &&aiBurstDataaiBurstData););
+1010  rdirdi..protocolprotocol()."
+10,2.0,"The bug occurs at the line `rdi.pmux(4).module(""02"").readHumanSeniority().execute();`. This code relates to Reads the actual measured humidity of the selected PMUX card from the hardware and
+stores it into a software cache.. According to the known bug manual retrieved via MCP, For retrieving the read value from the software cache, see getHumSensor().
+Example
+See also the Set and read thresholds, read actual values example in Accessing PMUX
+sensors.
+Related information
+Accessing PMUX sensors
+PMUX01 command HumidityAct
+Functional changes
+Introduced in SmartRDI 2.4.4
+readHumThresh()
+Reads the humidity alarm threshold of the selected PMUX card from the hardware and
+stores it into a software cache.
+Syntax
+List of parameters
+There are no parameters.
+Return value
+There is no return value.
+For retrieving the read value from the software cache, see getHumThresh().
+Example
+11  RDI_BEGINRDI_BEGIN();();
+22    rdi  rdi..pmuxpmux((44).).modulemodule((""02""""02"").).readHumSensorreadHumSensor().().executeexecute();();
+33  RDI_ENDRDI_END();();
+44    
+55  intint hum  hum == rdi rdi..idid((44).).getHumSensor getHumSensor ((""02""""02""););
+Topic 152289
+readHumThresh();
+11  RDI_BEGINRDI_BEGIN();();
+22    rdi  rdi..pmuxpmux((22).).modulemodule((""02""""02"").).readHumThreshreadHumThresh().().executeexecute();();
+33  RDI_ENDRDI_END();();
+44    
+55  intint humidityThreshold  humidityThreshold == rdi rdi..idid((22).).getHumThreshgetHumThresh((""02""""02""););"
+26,1.0,"The bug occurs at the line `anaWaveform wav1(""wav1""), wav2(""wav2""), wav3(""wav3"");`. This code relates to rdi.dc().addWaveform()
+Adds one or more waveforms in an execute() operation.
+This function supports digital cards and DC Scale cards (PMU and DPS operating
+modes).. According to the known bug manual retrieved via MCP, Related information
+How to use PPMU as Arbitrary Waveform Generator (AWG)
+rdi.dc().waveform()
+Functional changes
+Introduced in SmartRDI 2.1.0
+rdi.dc().addWaveform()
+Adds one or more waveforms in an execute() operation.
+This function supports digital cards and DC Scale cards (PMU and DPS operating
+modes).
+It can work together with vForce(), iForce(), iClamp(), and vClamp() actions. In
+addition, iMeas(), vMeas() or viMeas() can be used to the force or clamp actions.
+measWait() can be used to the measurement as well: force waveform() +
+addWaveform() + iMeas()/vMeas()/viMeas() + measWait().
+The waveform() plus repeat() can be taken as the first waveform group.
+Note  Do not support force addWaveform() parallel in one execute().
+anaWaveform vClampWave (""vClampWave"");
+vClampWave.definition(TM::RAMP).direction(TM::NEG)
+          .samples(100).periods(1).min(-25 V).max(-1 V);
+rdi.dc().pin(""AVI_01"").iForce(1 mA)
+                      .iForceRange(10 mA)
+                      .vClamp(-10, 10)
+                      .vForceRange(30 V)
+                      .execute();
+RDI_BEGIN();
+  rdi.dc().pin(""AVI_01"").vClamp()
+                        .waveform(vClampWave)
+                        .FS(1 kHz)
+                        .execute();
+  rdi.wait(1 ms);
+RDI_END();
+rdi.dc().pin(""AVI_01"").disconnect().execute();
+Topic 355546"
+23,1.0,"The bug occurs at the line `// You can get a combined result of all readBit()/readData() inside`. This code relates to  burstUpload will help to reduce the result uploading time. The results of multiple smartVec read commands. According to the known bug manual retrieved via MCP, Common upload with combined results retrieval
+This example uses burstUpload() to combine multiple results into a common upload,
+and retrieves combined results through a common result ID.
+RDI_BEGIN();
+ ...
+   rdi.digCap().burstUpload().begin();
+      rdi.smartVec();             // register setting 1
+      rdi.digCap(""10M"").pin(A).samples(1000).execute();
+      rdi.smartVec();            // register setting 2
+      rdi.digCap(""20M"").pin(A).samples(2000).execute(); 
+      rdi.smartVec();            // register setting 3
+      rdi.digCap(""30M"").pin(A).samples(4000).execute();     
+   rdi.digCap().burstUpload().end();
+ ...
+RDI_END();
+ARRAY_I vec1,vec2,vec3;
+vec1=rdi.id(""10M"").getVectorBit();
+vec2=rdi.id(""20M"").getVectorBit();
+vec3=rdi.id(""30M"").getVectorBit();
+RDI_BEGIN();
+ ...
+   rdi.digCap(""bid"").burstUpload().begin();
+      rdi...
+      rdi.digCap().pin(A).samples(1000).execute();
+      rdi...
+      rdi.digCap().pin(A).samples(2000).execute(); 
+      rdi...
+      rdi.digCap().pin(A).samples(4000).execute();     
+   rdi.digCap().burstUpload().end();
+ ...
+RDI_END();
+rdi.id(""bid"").getVector();
+rdi.id(""bid"").getVectorBit();"
+4,3.0,"The bug occurs at the line `rdi.dc().pin(m_rMcd.sP_VS).vForce(31 V).vForceRange(30 V).iForceRange(50 mA).iClamp(50 mA, -50 mA)`. This code relates to method order of arguments. According to the known bug manual retrieved via MCP, Workflow
+The following code structure is an example with numbers to indicate the execution
+steps.
+Note  The SEMI_PARALLEL_CONFIG setup for specific test actions cannot be
+changed dynamically between multiple executions.
+The following figure shows the execution sequence of the code structure for the test
+block level.
+SEMI_PARALLEL_CONFIG semipara; 
+semipara.group(1).add(1).add(3);
+semipara.group(2).add(2).add(4);
+ON_FIRST_INVOCATION_BEGIN();
+  ...(1)
+  FOR_SEMI_PARALLEL_TEST_BEGIN(semipara);
+    if(GET_CURRENT_SEMI_PARALLEL_GROUP_NUMBER() == 1)
+       ...(2.1)
+    else
+       ...(2.2) 
+       ...(3) 
+  FOR_SEMI_PARALLEL_TEST_END();
+  ...(4)
+ON_FIRST_INVOCATION_END();"
+31,1.0,"The bug occurs at the line `vector<string> vec_port1;`. This code relates to rdi.func().burstRunTime()
+Creates an empty burst label and specifies the maximum number of labels to be
+patched.
+SmartRDI uses this function to generate an empty burst label and then applies the
+firmware command SQPG to patch the burst content. According to the known bug manual retrieved via MCP, Related information
+rdi.id().getMultiPassFail()
+rdi.port(TA::MULTI_PORT).func()
+Functional changes
+Introduced in SmartRDI 2.1.0
+SmartRDI 7.6.1: Multi-port burst labels are supported in dynamic mode.
+rdi.func().burstRunTime()
+Creates an empty burst label and specifies the maximum number of labels to be
+patched.
+SmartRDI uses this function to generate an empty burst label and then applies the
+firmware command SQPG to patch the burst content.
+You can use only one burstRunTime() command for one port.
+Use rdi.id().getMultiPassFail() to retrieve the results from all the patterns in the created
+burst label.
+Syntax
+List of parameters
+Parameter Description
+sRunTime The runtime value.
+iMaxNum The maximum number of burst labels to be patched.
+11  RDI_BEGINRDI_BEGIN();();
+22  ......
+33  rdirdi..portport((""pt1""""pt1"").).funcfunc((""id1""""id1"").).burstburst((""MPBurst1""""MPBurst1"").).executeexecute();();
+44  ......
+55  rdirdi..portport((""pt2""""pt2"").).funcfunc((""id2""""id2"").).burstburst((""MPBurst2""""MPBurst2"").).executeexecute();();
+66  ......
+77  RDI_ENDRDI_END();();
+88    
+99  intint pf  pf == rdi rdi..idid((""id1""""id1"").).getPassFailgetPassFail();();  // returns 0// returns 0
+1010  ARRAY_I ary2 ARRAY_I ary2 == rdi rdi..idid((""id1""""id1"").).getMultiPassFailgetMultiPassFail();();    // returns { 0,1// returns { 0,1
+1111    
+1212  intint pf  pf == rdi rdi..idid((""id1""""id1"").).getPassFailgetPassFail();();  // returns 1// returns 1
+1313  ARRAY_I ary3 ARRAY_I ary3 == rdi rdi..idid((""id2""""id2"")."
+17,1.0,"The bug occurs at the line `RDI_BEGIN();`. This code relates to getting the first fail vector.. According to the known bug manual retrieved via MCP, rdi.id().getFailCount()
+Returns fail count.
+Syntax
+List of parameters
+Parameter Description
+pin Specifies a pin for which to get the fail count.
+Return value
+The return value is an integer indicating the number of errors.
+Example
+Related information
+rdi.emap().failCount()
+Functional changes
+Introduced in SmartRDI 2.4.4
+rdi.id().getFailCyc()
+Returns positions of all failing cycles.
+Syntax
+int getFailCount(string pin);
+11  ON_FIRST_INVOCATION_BEGINON_FIRST_INVOCATION_BEGIN();();
+22    
+33    RDI_BEGIN  RDI_BEGIN();();
+44      rdi    rdi..smartVecsmartVec((""a""""a"").).pinpin((""pA""""pA"").).writePatwritePat((""0,1,1,H,H,H,L""""0,1,1,H,H,H,L"").).failCountfailCount
+55    RDI_END  RDI_END();();
+66    
+77  ON_FIRST_INVOCATION_ENDON_FIRST_INVOCATION_END();();
+88    
+99  intint fcount fcount==rdirdi..idid((""a""""a"").).getFailCountgetFailCount((""pA""""pA""););
+Topic 152273
+ARRAY_LL getFailCyc(string pin);"
+27,4.0,"The bug occurs at the line `rdi.wait(3 ms);`. This code relates to rdi.dc().iMeasRange()
+Specifies a current measurement range.SmartRDI will check the time between iMeasRange() and the next event on the pin. . According to the known bug manual retrieved via MCP, Functional changes
+Introduced in SmartRDI 2.1.0
+SmartRDI 7.5.0: New syntax for ""LAST"" measurements of FVI16.
+rdi.dc().iMeasRange()
+Specifies a current measurement range.
+Syntax
+List of parameters
+Parameter Description
+dIMeasRange The range of the current to measure.
+iMeasRange() can be used in both code‑based and pattern‑based modes. It is usually
+used in the pattern‑based mode.
+SmartRDI will check the time between iMeasRange() and the next event on the pin. A
+warning message will issued if the time is not long enough and you need to insert the
+wait time manually.
+Return value
+A reference to the dcBase object.
+Application notes
+Programming both the force and the measurement range of AVI64 and FVI16
+AVI64 and FVI16 do not have different force and measurement ranges.
+Thus using iForceRange() and iMeasRange() within one SmartRDI command that
+is terminated by rdi.execute() will not result in different ranges, but the current
+measurement range will finally be active. The applied sequence is
+1. Set current force range (active for a short time)
+2. Set current measurement range (overrides the current force range)
+Topic 143537
+rdi.dc().iMeasRange(double dIMeasRange);"
+24,1.0,"The bug occurs at the line `ON_FIRST_INVOCATION_BEGIN();`. This code relates to Generating a new digital capture pattern
+with SmartRDI.Digital capture without hidden upload. According to the known bug manual retrieved via MCP, Examples
+Digital capture without hidden upload
+Digital capture with hidden upload
+Related information
+X-mode handling in digCap with SmartRDI
+Functional changes
+Introduced in SmartRDI 2.1.0
+Inserting digital capture actions in an
+existing pattern with SmartRDI
+You can insert some digital capture actions for some specific pins in an existing pattern
+to do the digital capture test.
+11  ON_FIRST_INVOCATION_BEGINON_FIRST_INVOCATION_BEGIN();();
+22    RDI_BEGIN  RDI_BEGIN();();
+33      rdi    rdi..digCapdigCap((""cap""""cap"").).pinpin((""DO""""DO"").).samplessamples((100100).).initDiscardinitDiscard((1010).).interSinterS
+44    RDI_END  RDI_END((  ););
+55  ON_FIRST_INVOCATION_ENDON_FIRST_INVOCATION_END();();
+66  constconst  ARRAY_I  ARRAY_I&& aiData  aiData == rdi rdi..idid((""cap""""cap"").).getVectorgetVector((""DO""""DO""););  
+run()
+{
+  ON_FIRST_INVOCATION_BEGIN();
+    rdi.hiddenUpload(TA::DIGCAP);
+    RDI_BEGIN();
+      rdi.digCap(""id2"").pin(""A"").samples(1024).execute();
+    RDI_END();  
+  ON_FIRST_INVOCATION_END();
+  SMC_ARM(); 
+}
+...
+public:
+void SMC_backgroundProcessing() 
+{
+  ARRAY_I bits = rdi.id(""id2"").getVectorBit(); 
+}
+Topic 143897"
+14,3.0,"The bug occurs at the line `rdi.dc(""a"").pin(""dig"").iForce(0).vMeas().execute();`. This code relates to Getting alarm DC results on specific pins. According to the known bug manual retrieved via MCP, Alarm checks disabled by current threshold
+Starting from SmartRDI 7.5.3, you can define a current threshold to disable alarm checks
+globally or per pin.
+In the alarm setup file, you can use GlobalDisableAlarmIth to define a global current
+threshold value for globally disabling alarm checking actions; or use DisableAlarmIth to
+define a current threshold value per pin for disabling alarm checking on a specific pin.
+In SmartRDI code, you can use rdi.alarm().globalDisableAlarmIth() or
+rdi.alarm().pin(pinA).disableAlarmIth() to define a current threshold value. See the
+following example.
+Understanding alarm fails and warnings
+If an alarm checking fails in a burst, the general burst Pass/Fail result fails too. The
+reason is that the alarm pin's fail contributes to the general burst Fail result.
+In the Alarm setup file, alarm warnings can be enabled/disabled for printout to the UI
+report window by the flag ALARM_FAIL_WARNING = TRUE/FALSE. The warning indicates
+an alarm fail.
+Normally, a limit violation triggers an alarm fail and a warning. The violation is then
+reported in the UI report window if DEBUG_VALUE = TRUE in the alarm setup file.
+Furthermore, since the alarm limit violations trigger a pattern fail result on the related
+alarm pin, the fail location can be seen in the expanded view of the executed burst by
+red dots.
+It may, however, happen that an alarm fail and a warning is reported, but there is no
+alarm limit violation. Possible reasons are:
+A failing match loop, as it sets all pins, including DC and DPS, of the same port to
+FAIL.
+A Power Supply Accumulated Status failure, please refer to PSAS? - (Power Supply
+Accumulated Status). The status can be checked by pressing the ""Get Status Flag""
+button in the hardware view of the reported pin right after the execution of the
+RDI-block that triggered the fail and the warning.
+11  rdirdi..alarmalarm().().globalDisableAlarmIthglobalDisableAlarmIth((55 uA uA););
+22  rdirdi..dcdc().().pinpin((""FVI01""""FVI01"").).vForcevForce((11)."
+9,1.0,"The bug occurs at the line `rdi.cogo().node(""this"").passNode(""id1"").failNode(""id2"").begin();`. This code relates to System-reserved waiting in cogo. According to the known bug manual retrieved via MCP, System-reserved waiting in cogo
+The system needs a waiting time to make the judgment. This waiting time lies between
+the judgment pattern and the jump at the end of the cogo execution. This waiting time
+is not a fixed value and it depends on its environment.
+You can put your own rdi.wait() function before cogo().node().end(). If you use
+rdi.cogo().wait(double) in your code, SmartRDI can check whether this waiting
+time is long enough for the system-reserved waiting.
+Example:
+Note  If there are any shared pin cross sites, you must set the test suite flag
+""site_match"" to ON.
+11  rdirdi..cogocogo().().nodenode((""this""""this"").).passNodepassNode((""id1""""id1"").).failNodefailNode((""id2""""id2"").).beginbegin();();
+22      ......  // Pass or fail judgment.  // Pass or fail judgment.  
+33    rdi  rdi..cogocogo().().waitwait((100100 us us););    // SmartRDI checks whether this time i// SmartRDI checks whether this time i
+44  rdirdi..cogocogo().().nodenode().().endend();();"
+13,,"The bug occurs at the line `None`. This code relates to Hidden upload in CCTestMethod_ISR
+The code example below describes how to use the hidden upload feature in. According to the known bug manual retrieved via MCP, Hidden upload in CCTestMethod_ISR
+The code example below describes how to use the hidden upload feature in
+CCTestMethod_ISR.
+Functional changes
+Introduced in SmartRDI 2.4.0
+postBurst()
+Holds commands to be executed after an RDI_BEGIN and RDI_END block.
+Syntax
+Example
+This is a template for the code structure of concurrent test framework in SmartRDI.
+11  isrRunisrRun()()
+22  {{  // Do not need RDI_INIT();// Do not need RDI_INIT();
+33  ON_FIRST_INVOCATION_BEGINON_FIRST_INVOCATION_BEGIN();();
+44  rdirdi..hiddenUploadhiddenUpload((TATA::::ALLALL););
+55  RDI_CCT_BEGINRDI_CCT_BEGIN()();;
+66     rdi   rdi..dgtdgt((""dgr""""dgr"").).pinpin((""B""""B"").).samplesample((10241024).).FsFs((10M10M).).executeexecute();();
+77     rdi   rdi..dcdc((""idd""""idd"").).pinpin((""vdd""""vdd"").).iMeasiMeas().().executeexecute();();
+88     rdi   rdi..digCapdigCap((""cap""""cap"").).pinpin((""GPO""""GPO"").).samplesample((10001000).).executeexecute();();
+99  RDI_CCT_ENDRDI_CCT_END()();;
+1010  ON_FIRST_INVOCATION_ENDON_FIRST_INVOCATION_END();();
+1111    
+1212  SMC_ARMSMC_ARM();();
+1313  }}
+1414  SMC_BackgroundProcessingSMC_BackgroundProcessing()()
+1515  {{
+1616  rdirdi..idid((""cap""""cap"").).getVectorgetVector();();
+1717  rdirdi..idid((""idd""""idd"").).getValuegetValue();();
+1818  rdirdi..idid((""dgr""""dgr"").).getWaveformgetWaveform();();
+1919  }}
+Topic 343868
+postBurst()"
+22,3.0,"The bug occurs at the line `.module(""02"").readTempThresh(70)`. This code relates to reading the temperature alarm threshold of the selected PMUX card. According to the known bug manual retrieved via MCP, See also the Set and read thresholds, read actual values example in Accessing PMUX
+sensors.
+Related information
+Accessing PMUX sensors
+PMUX01 command HumidityAlarm
+setHumThresh()
+Functional changes
+Introduced in SmartRDI 2.4.4
+readTempSensor()
+Reads the actual measured temperature of the selected PMUX card from the hardware
+and stores it into a software cache.
+Syntax
+List of parameters
+There are no parameters.
+Return value
+There is no return value.
+For retrieving the read value from the software cache, see getTempSensor().
+Example
+See also the Set and read thresholds, read actual values example in Accessing PMUX
+sensors.
+Related information
+Accessing PMUX sensors
+PMUX01 command TempAct
+Topic 152290
+readTempSensor();
+11  RDI_BEGINRDI_BEGIN();();
+22    rdi  rdi..pmuxpmux((33).).modulemodule((""02""""02"").).readTempSensorreadTempSensor().().executeexecute();();
+33  RDI_ENDRDI_END();();
+44    
+55  intint temp  temp == rdi rdi..idid((33).).getTempSensorgetTempSensor((""02""""02""););"
+29,1.0,"The bug occurs at the line `RDI_BEGIN();`. This code relates to Retrieves the status of a pmux switch in both online mode and offline mode.rdi.route().retrievePmuxPinStatus(). According to the known bug manual retrieved via MCP, Related information
+Utility lines
+MUX cards
+Functional changes
+Introduced in SmartRDI 2.5.0
+rdi.route().retrievePmuxPinStatus()
+Retrieves the status of a pmux switch in both online mode and offline mode.
+Syntax
+List of parameters
+Parameter Description
+pin The pin name that has been defined in the routing setup file.
+For a link pin, the result sequence is the same as the pins sequence in the routing setup file.
+Example
+11  RDI_INITRDI_INIT();();
+22  ......
+33  ......
+44  ON_FIRST_INVOCATION_BEGINON_FIRST_INVOCATION_BEGIN();();
+55  {{
+66          ......
+77          ......
+88      RDI_BEGIN    RDI_BEGIN();();
+99          {{
+1010                  ......
+1111                  ......
+1212          }}
+1313      RDI_END    RDI_END();();
+1414          ......
+1515          ......
+1616      rdi    rdi..routeroute().().resetreset().().executeexecute();();
+1717          ......
+1818          ......
+1919  }}
+2020  ON_FIRST_INVOCATION_ENDON_FIRST_INVOCATION_END();();
+2121  ......
+2222  ......
+Topic 353659
+ARRAY_I var = rdi.route().retrievePmuxPinStatus(string pin);"
+2,2.0,"The bug occurs at the line `//go back to default voltage`. This code relates to Specification of AVI64. According to the known bug manual retrieved via MCP, Functional changes
+Introduced in SmarTest 7.5.3
+AVI64 Use Case - Enhanced accuracy
+calibration done by Test Cell Control Tool
+The AVI64 specification contains enhanced accuracy specifications for following items:
+AVI64 PMU voltage force and measurement specifications
+AVI64 floating differential voltmeter specifications
+AVI64 AWG specifications
+For further information refer to Enhanced accuracy and relative accuracy specifications.
+    }
+    RDI_END();
+ 
+    rdi.enableWarning(); //end suppress warning
+ 
+    ///////////////////////////////
+    // PIN DISCONNECT
+    rdi.hwRelay().pin(""AVI_03,AVI_04"").setOff(""AC"").execute();
+ 
+}
+ON_FIRST_INVOCATION_END();
+ 
+//////////////////////////////////////////////////////////////
+double  t_Arm1 = rdi.id(""iFall_20mA"").getArm(""AVI_04"");
+double  t_Arm2 = rdi.id(""iFall_5mA"").getArm(""AVI_04"");
+double  tFall  = -1.0 us; //preset the result to identify measurement w
+ 
+ARRAY_D tStp1  = rdi.id(""iFall_20mA"").getStamp(""AVI_04"");
+ARRAY_D tStp2  = rdi.id(""iFall_5mA"").getStamp(""AVI_04"");
+ 
+//check if sample number is ok, to avoid test program crash in case of 
+if( (tStp1.size()==3) && (tStp2.size()==3)) //expected timestamps set b
+{
+    //in this example calculate the mean value out of 3 measurements
+    tFall = (((tStp1[0]-t_Arm1)-(tStp2[0]-t_Arm2)) + ((tStp1[1]-t_Arm1)
+}
+Topic 353548"
+20,1.0,"The bug occurs at the line `rdi.digCapBurstSiteUpload(false);`. This code relates to local control over the ""burst site upload"" capacity for digital capture results. According to the known bug manual retrieved via MCP, rdi.digCapBurstSiteUpload()
+Provides a local control over the ""burst site upload"" capacity for digital capture results.
+Syntax
+List of parameters
+Parameter Description
+digCapBurstSiteUpload Whether to use burst site upload for the following digital capture test. It can be true or
+false. The default value is false.
+If it is set to true, the maximum sample number is 8192.
+List of available options of
+parameter: hwDecimation
+Option Description
+true Use burst site upload.
+false Do not use burst site upload.
+Example
+Functional changes
+Introduced in SmartRDI 2.5.0
+Fast Sync setup with SmartRDI
+Fast Sync enables the local synchronization of the test processor. For more information,
+see Fast Sync.
+SmartRDI provides the following functions to set up the Fast Sync feature in the
+code‑based mode:
+fastSyncOn(), fastSyncOff(), and fastSyncPortNum().
+Related information
+Fast Sync
+Topic 343352
+rdi.digCapBurstSiteUpload(bool digCapBurstSiteUpload);
+11  rdirdi..digCapBurstSiteUploaddigCapBurstSiteUpload((truetrue););
+22  RDI_BEGINRDI_BEGIN();();
+33    rdi  rdi..digCapdigCap((11).).pinpin((""DATA1""""DATA1"").).samplessamples((10241024).).executeexecute();();
+44  RDI_ENDRDI_END();();
+Topic 151024"
+11,3.0,"The bug occurs at the line `rdi.dc().pin(""dig2"").iForce(1 uA).vMeans().execute(); // average =`. This code relates to Specifies the number of samples used to do the averaging when the measurement
+instrument is board ADC. The result of the measurement is averaged.
+For accuracy considerations, refer to member function number of samples() of API
+PPMU_PIN_MEASURE.. According to the known bug manual retrieved via MCP, Averaging
+All channels of the card feature hardware based averaging of measurements. The
+average of multiple consecutive ADC samples is calculated and stored on
+board.Hardware based averaging can be utilized for code‑based and pattern‑based
+measurements.
+Programmable range of samples: 1 ... 65535 (any value supported)
+ADC sample frequency: 1 MHz
+Some hints to consider:
+The sample time for averaged measurements must be taken into account.
+Pattern‑based measurements require a minimum number of vectors after the
+trigger has been initiated. For more information, refer to Timing of DC events and
+the related sub-topics.
+The effective maximum sample frequency is the ADC sample frequency of 1 MHz
+divided by the number of averaged samples.
+The ""measurement filter"" may be used instead of averaging if a high effective
+sample frequency is required. This filter behaves like a simple RC filter. The settling
+time is to be considered but the filter setting has no effect on the effective
+maximum sample frequency.
+The dynamic behavior of the force output is independent of the settings for
+averaging."
+3,3.0,"The bug occurs at the line `//go back to default voltage`. This code relates to Specification of AVI64. According to the known bug manual retrieved via MCP, Functional changes
+Introduced in SmarTest 7.5.3
+AVI64 Use Case - Enhanced accuracy
+calibration done by Test Cell Control Tool
+The AVI64 specification contains enhanced accuracy specifications for following items:
+AVI64 PMU voltage force and measurement specifications
+AVI64 floating differential voltmeter specifications
+AVI64 AWG specifications
+For further information refer to Enhanced accuracy and relative accuracy specifications.
+    }
+    RDI_END();
+ 
+    rdi.enableWarning(); //end suppress warning
+ 
+    ///////////////////////////////
+    // PIN DISCONNECT
+    rdi.hwRelay().pin(""AVI_03,AVI_04"").setOff(""AC"").execute();
+ 
+}
+ON_FIRST_INVOCATION_END();
+ 
+//////////////////////////////////////////////////////////////
+double  t_Arm1 = rdi.id(""iFall_20mA"").getArm(""AVI_04"");
+double  t_Arm2 = rdi.id(""iFall_5mA"").getArm(""AVI_04"");
+double  tFall  = -1.0 us; //preset the result to identify measurement w
+ 
+ARRAY_D tStp1  = rdi.id(""iFall_20mA"").getStamp(""AVI_04"");
+ARRAY_D tStp2  = rdi.id(""iFall_5mA"").getStamp(""AVI_04"");
+ 
+//check if sample number is ok, to avoid test program crash in case of 
+if( (tStp1.size()==3) && (tStp2.size()==3)) //expected timestamps set b
+{
+    //in this example calculate the mean value out of 3 measurements
+    tFall = (((tStp1[0]-t_Arm1)-(tStp2[0]-t_Arm2)) + ((tStp1[1]-t_Arm1)
+}
+Topic 353548"
